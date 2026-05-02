@@ -1,0 +1,88 @@
+name: Automation Test Suite
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    - cron: '0 6 * * *'   # Run daily at 6 AM UTC
+
+jobs:
+  api-tests:
+    name: API Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Cache pip dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run API tests
+        run: |
+          pytest api_scripts/ -v --tb=short \
+            --html=reports/api_report.html \
+            --self-contained-html
+        env:
+          API_BASE_URL: ${{ secrets.API_BASE_URL }}
+
+      - name: Upload API test report
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: api-test-report
+          path: reports/api_report.html
+
+  selenium-tests:
+    name: Selenium Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install Chrome
+        uses: browser-actions/setup-chrome@latest
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run Selenium tests (headless)
+        run: |
+          pytest selenium_scripts/ -v --tb=short \
+            --html=reports/selenium_report.html \
+            --self-contained-html
+        env:
+          HEADLESS: "true"
+          BASE_URL: ${{ secrets.BASE_URL }}
+
+      - name: Upload Selenium report
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: selenium-test-report
+          path: reports/selenium_report.html
+
+      - name: Upload screenshots on failure
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: failure-screenshots
+          path: screenshots/
