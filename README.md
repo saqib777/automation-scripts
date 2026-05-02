@@ -1,7 +1,7 @@
 # Automation Scripts
 
 A production-grade test automation framework covering Selenium UI tests,
-REST API tests, CI/CD integration, and utilities — built in Python.
+REST API tests, CI/CD integration, and utilities - built in Python.
 
 ---
 
