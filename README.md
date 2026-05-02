@@ -102,4 +102,4 @@ Reports are uploaded as workflow artifacts after each run.
 
 ## Author
 
-Mohammed Saqib — github.com/saqib777 — Bengaluru, India
+Mohammed Saqib - github.com/saqib777 - Bengaluru, India
