@@ -1,5 +1,5 @@
 # Test report generator
-# Runs pytest and produces HTML report + summary
+# Runs pytest and produces HTML report + summary. This is a practical example
 
 import subprocess
 import sys
